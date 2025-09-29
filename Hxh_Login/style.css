@@ -231,3 +231,17 @@ section .character {
   display: block;                      /* verhindert kleine Lücken */
   pointer-events: none;
 }
+
+:root{
+  --trees-w: 1900px;  /* hier stellst du die Größe ein */
+}
+
+section .trees{
+  width: var(--trees-w);
+  height: auto;
+  left: 50%;
+  bottom: 0;
+  top: auto;
+  transform: translateX(-50%);
+  object-fit: contain;
+}
