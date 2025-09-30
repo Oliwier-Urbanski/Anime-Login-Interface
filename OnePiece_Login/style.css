@@ -245,3 +245,45 @@ section .trees{
   transform: translateX(-50%);
   object-fit: contain;
 }
+
+/* === Character Picker oben links === */
+.character-picker {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 200;            /* über Leaves/Trees */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 10px;
+  pointer-events: auto;    /* klickbar trotz anderer Layers */
+}
+
+.character-picker label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #541611;
+}
+
+.character-picker select {
+  appearance: none;
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: #fff;
+  cursor: pointer;
+}
+
+/* === Laufanimation auf den neutralen Klassennamen mappen === */
+section .character {
+  position: absolute;
+  scale: 0.55;
+  pointer-events: none;
+  animation: animateItachi 10s linear infinite; /* gleicher Keyframe-Name */
+  bottom: -160px;
+}

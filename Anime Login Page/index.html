@@ -1,44 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Anime Login Page</title>
-	<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Anime Login Page</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-	<section>
-		<div class="leaves">
-			<div class="set">
-				<div><img src="images/leaf_01.png"></div>
-				<div><img src="images/leaf_02.png"></div>
-				<div><img src="images/leaf_03.png"></div>
-				<div><img src="images/leaf_04.png"></div>
-				<div><img src="images/leaf_01.png"></div>
-				<div><img src="images/leaf_02.png"></div>
-				<div><img src="images/leaf_03.png"></div>
-				<div><img src="images/leaf_04.png"></div>
-			</div>
-		</div>
-		<img src="images/bg-2.jpg" class="bg">
-		<img src="images/itachi.png" class="itachi">
-		<img src="images/trees.png" class="trees">
-		<div class="login">
-			<h2>Sign In</h2>
-			<div class="inputBox">
-				<input type="text" placeholder="Username"
-			</div>
-			<div class="inputBox">
-				<input type="password" placeholder="Password"
-			</div>
-			<div class="inputBox">
-				<input type="submit" value="Login" id="btn">
-			</div>
-			<div class="group">
-				<a href="#">Forget Password</a>
-				<a href="#">Signup</a>
-			</div>
-		</div>
-		
-	</section>
+  <section>
+    <!-- Character Switcher oben links -->
+    <div class="character-picker" aria-label="Charakter auswählen">
+      <label for="characterSelect">Character</label>
+      <select id="characterSelect">
+        <!-- Du kannst hier beliebig erweitern -->
+        <option value="images/itachi.png" selected>Itachi</option>
+        <option value="images/naruto.png">Naruto</option>
+        <option value="images/sasuke.png">Sasuke</option>
+      </select>
+    </div>
+
+    <div class="leaves">
+      <div class="set">
+        <div><img src="images/leaf_01.png" /></div>
+        <div><img src="images/leaf_02.png" /></div>
+        <div><img src="images/leaf_03.png" /></div>
+        <div><img src="images/leaf_04.png" /></div>
+        <div><img src="images/leaf_01.png" /></div>
+        <div><img src="images/leaf_02.png" /></div>
+        <div><img src="images/leaf_03.png" /></div>
+        <div><img src="images/leaf_04.png" /></div>
+      </div>
+    </div>
+
+    <img src="images/bg-2.jpg" class="bg" />
+    <!-- Neutraler Klassenname -->
+    <img src="images/itachi.png" class="character" alt="Character" />
+    <img src="images/trees.png" class="trees" />
+
+    <div class="login">
+      <h2>Sign In</h2>
+      <div class="inputBox">
+        <input type="text" placeholder="Username" />
+      </div>
+      <div class="inputBox">
+        <input type="password" placeholder="Password" />
+      </div>
+      <div class="inputBox">
+        <input type="submit" value="Login" id="btn" />
+      </div>
+      <div class="group">
+        <a href="#">Forget Password</a>
+        <a href="#">Signup</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Simple PNG-Switcher + optional Persistenz
+    (function () {
+      const select = document.getElementById('characterSelect');
+      const img = document.querySelector('.character');
+
+      // letzten Auswahlzustand laden
+      const saved = localStorage.getItem('characterPNG');
+      if (saved) {
+        img.src = saved;
+        // falls Option existiert, auswählen
+        const opt = Array.from(select.options).find(o => o.value === saved);
+        if (opt) select.value = saved;
+      }
+
+      select.addEventListener('change', () => {
+        img.src = select.value;
+        localStorage.setItem('characterPNG', select.value);
+      });
+    })();
+  </script>
 </body>
 </html>
