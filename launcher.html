@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anime Launcher — Stylized</title>
+  <style>
+    :root{
+      --bg-0:#06070b;
+      --bg-1:#0a0f1d;
+      --bg-2:#0f1b2f;
+      --fg:#eaf1ff;
+      --muted:#9eb0c7;
+      --ring:#6ec1ff;
+      --card:#0c1422;
+      --border:rgba(255,255,255,.08);
+      --glow:rgba(110,193,255,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;color:var(--fg);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;background:radial-gradient(1200px 800px at 20% -10%,var(--bg-2) 0%,var(--bg-1) 55%,var(--bg-0) 100%);overflow:hidden}
+
+    /* --- Ambient layers --- */
+    .ambient{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .ambient:before,.ambient:after{content:"";position:absolute;inset:-20%;filter:blur(60px);opacity:.28;background:conic-gradient(from 0deg at 50% 50%,#2de1f2,transparent 25%,#5b7cfa 35%,transparent 58%,#08f7c5 70%,transparent 100%);animation:spin 30s linear infinite}
+    .ambient:after{animation-duration:55s;mix-blend-mode:screen;opacity:.18}
+    @keyframes spin{to{transform:rotate(1turn)}}
+
+    /* tiny drifting particles */
+    .particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+    .dot{position:absolute;width:3px;height:3px;border-radius:50%;background:#c7e6ff;opacity:.65;filter:drop-shadow(0 0 6px #6ec1ff)}
+    @keyframes floatY{0%{transform:translateY(5vh)}50%{transform:translateY(-5vh)}100%{transform:translateY(5vh)}}
+
+    /* Layout */
+    .wrap{position:relative;z-index:2;min-height:100%;display:grid;grid-template-rows:auto 1fr auto}
+    header{display:flex;gap:14px;align-items:center;padding:22px 24px}
+    .logo{font-weight:900;letter-spacing:.6px}
+    .chip{padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.04);color:var(--muted);font-size:12px}
+
+    main{display:grid;place-items:center;padding:10px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;width:min(940px,92vw)}
+
+    /* Anime card buttons */
+    .card{
+      position:relative;overflow:hidden;isolation:isolate;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--border);
+      height:200px;display:flex;align-items:flex-end;padding:16px;cursor:pointer;user-select:none;transform-style:preserve-3d;transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease
+    }
+    .card:hover{box-shadow:0 18px 60px rgba(0,0,0,.45), 0 0 0 1px var(--glow) inset;border-color:rgba(110,193,255,.35)}
+    .card:focus-visible{outline:none;box-shadow:0 0 0 2px var(--ring), 0 18px 60px rgba(0,0,0,.45)}
+
+    .card .shine{position:absolute;inset:-60px;z-index:0;background:radial-gradient(500px 220px at var(--mx,50%) var(--my,50%), rgba(110,193,255,.32), transparent 60%);mix-blend-mode:screen;transition:opacity .2s}
+    .card:hover .shine{opacity:1}
+
+    .card .bg{position:absolute;inset:0;z-index:0;opacity:.22;background-position:center;background-size:cover;filter:saturate(1.2) contrast(1.05)}
+
+    .card .halo{position:absolute;inset:-30%;z-index:0;background:radial-gradient(60% 60% at 50% 110%, var(--halo,#6ec1ff33), transparent 60%);transform:translateZ(-40px)}
+
+    .card .content{position:relative;z-index:1;display:flex;gap:10px;align-items:flex-end}
+    .emoji{font-size:34px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.55))}
+    .title{font-weight:800;letter-spacing:.4px}
+    .title small{display:block;color:var(--muted);font-weight:600;letter-spacing:.2px}
+
+    .actions{display:flex;gap:10px;margin-left:auto}
+    .btn{appearance:none;border:none;border-radius:12px;padding:10px 12px;background:#121b2a;color:var(--fg);border:1px solid var(--border);font-weight:700;cursor:pointer}
+    .btn.primary{background:linear-gradient(180deg,#79c8ff,#46a6ff);color:#051424;border:none}
+    .btn:hover{filter:brightness(1.05)}
+
+    footer{padding:18px 24px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:10px}
+
+    /* small helper */
+    .kbd{display:inline-block;border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:0 6px;background:#0e131a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  </style>
+</head>
+<body>
+  <div class="ambient"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="logo">ANIME LOGIN</div>
+    </header>
+
+    <main>
+      <div class="grid" id="grid"></div>
+    </main>
+
+    <footer>
+      <div id="pathHint"></div>
+    </footer>
+  </div>
+
+  <script>
+    // ====== DATA: Anime Auswahl ======
+    const ENTRIES = [
+      {
+        key: 'naruto-itachi',
+        title: 'Naruto',
+        subtitle: 'Uchiha Itachi',
+        emoji: '🍥',
+        path: 'Anime Login Page/index.html',
+        halo: '#ffb47033',
+        bg: 'Anime Login Page/images/bg.jpg' // Card-Hintergrund
+      },
+      {
+        key: 'hxh-gon',
+        title: 'Hunter × Hunter',
+        subtitle: 'Gon Freecss',
+        emoji: '🪙',
+        path: 'Hxh_Login/index.html',
+        halo: '#5cffd533',
+        bg: 'Hxh_Login/images/bg.png'
+      },
+      {
+        key: 'OnePiece',
+        title: 'One Piece',
+        subtitle: 'The Crew',
+        emoji: '🥩',
+        path: 'OnePiece_Login/index.html',
+        halo: '#5cffd533',
+        bg: 'OnePiece_Login/images/Bg-2.png'
+      }
+
+    ];
+
+    // ====== RENDER CARDS ======
+    const grid = document.getElementById('grid');
+    const pathHint = document.getElementById('pathHint');
+
+    function cardTemplate(entry){
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.tabIndex = 0;
+      card.dataset.key = entry.key;
+      card.innerHTML = `
+        <div class="shine"></div>
+        <div class="bg" style="background-image:url('${encodeURI(entry.bg || '')}')"></div>
+        <div class="halo" style="--halo:${entry.halo}"></div>
+        <div class="content">
+          <div class="emoji">${entry.emoji}</div>
+          <div class="title">
+            ${entry.title}
+            <small>${entry.subtitle}</small>
+          </div>
+          
+        </div>`;
+
+      // 3D tilt + cursor shine
+      card.addEventListener('mousemove', (e)=>{
+        const r = card.getBoundingClientRect();
+        const x = e.clientX - r.left; const y = e.clientY - r.top;
+        const rx = ((y / r.height) - .5) * -6; // tilt range
+        const ry = ((x / r.width) - .5) * 10;
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        card.style.setProperty('--mx', (x / r.width * 100) + '%');
+        card.style.setProperty('--my', (y / r.height * 100) + '%');
+      });
+      card.addEventListener('mouseleave', ()=>{ card.style.transform = 'none'; });
+
+      // open actions: click or Enter -> always new tab
+      card.addEventListener('click', ()=> openEntry(entry.path));
+      card.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') openEntry(entry.path); });
+
+      return card;
+    }
+
+    function render(){
+      grid.innerHTML = '';
+      ENTRIES.forEach(e=> grid.appendChild(cardTemplate(e)));
+      pathHint.textContent = `${location.href.replace(/#.*$/, '')}`;
+    }
+    render();
+
+    // ====== OPEN HELPERS ======
+    function openEntry(relPath){
+      const url = new URL(relPath, window.location.href).href;
+      window.open(url, '_blank');
+    }
+
+    // ====== PARTICLES ======
+    const p = document.getElementById('particles');
+    for(let i=0;i<80;i++){
+      const d = document.createElement('div');
+      d.className = 'dot';
+      const x = Math.random()*100; const y = Math.random()*100; const s = Math.random()*1.2 + .3;
+      d.style.left = x + 'vw'; d.style.top = y + 'vh'; d.style.transform = `scale(${s})`;
+      d.style.animation = `floatY ${12 + Math.random()*20}s ease-in-out ${Math.random()*-20}s infinite`;
+      p.appendChild(d);
+    }
+  </script>
+</body>
+</html>
