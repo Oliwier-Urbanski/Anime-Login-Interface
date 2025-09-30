@@ -1,44 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Anime Login Page</title>
-	<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Anime Login Page</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-	<section>
-		<div class="particles">
-			<div class="set">
-				<div><img src="images/hxh_card_back.png"></div>
-				<div><img src="images/hxh_card_front.png"></div>
-				<div><img src="images/hxh_card_back.png"></div>
-				<div><img src="images/hxh_card_front.png"></div>
-				<div><img src="images/hxh_card_back.png"></div>
-				<div><img src="images/hxh_card_front.png"></div>
-				<div><img src="images/hxh_card_front.png"></div>
-				<div><img src="images/hxh_card_back.png"></div>
-			</div>
-		</div>
-		<img src="images/bg.png" class="bg">
-		<img src="images/GON.png" class="character">
-		<img src="images/trees.png" class="trees">
-		<div class="login">
-			<h2>Sign In</h2>
-			<div class="inputBox">
-				<input type="text" placeholder="Username"
-			</div>
-			<div class="inputBox">
-				<input type="password" placeholder="Password"
-			</div>
-			<div class="inputBox">
-				<input type="submit" value="Login" id="btn">
-			</div>
-			<div class="group">
-				<a href="#">Forget Password</a>
-				<a href="#">Signup</a>
-			</div>
-		</div>
-		
-	</section>
+  <section>
+    <!-- Character Switcher oben links -->
+    <div class="character-picker" aria-label="Charakter auswählen">
+      <label for="characterSelect">Character</label>
+      <select id="characterSelect">
+        <!-- Werte verweisen direkt auf PNGs -->
+        <option value="images/GON.png" selected>Gon</option>
+        <option value="images/KILLUA.png">Killua</option>
+        <option value="images/KURAPIKA.png">Kurapika</option>
+        <option value="images/HISOKA.png">Hisoka</option>
+        <option value="images/LEORIO.png">Leorio</option>
+      </select>
+    </div>
+
+    <!-- Particles -->
+    <div class="particles">
+      <div class="set">
+        <div><img src="images/hxh_card_back.png" alt="" /></div>
+        <div><img src="images/hxh_card_front.png" alt="" /></div>
+        <div><img src="images/hxh_card_back.png" alt="" /></div>
+        <div><img src="images/hxh_card_front.png" alt="" /></div>
+        <div><img src="images/hxh_card_back.png" alt="" /></div>
+        <div><img src="images/hxh_card_front.png" alt="" /></div>
+        <div><img src="images/hxh_card_front.png" alt="" /></div>
+        <div><img src="images/hxh_card_back.png" alt="" /></div>
+      </div>
+    </div>
+
+    <img src="images/bg.png" class="bg" alt="" />
+
+    <!-- Einheitliche Bühne: immer gleiche Position/Größe für alle PNGs -->
+<!-- Einheitliche Bühne für alle Charaktere -->
+<div class="character-box move">
+  <img src="images/GON.png" class="character" alt="Character" />
+</div>
+
+
+
+    <img src="images/trees.png" class="trees" alt="" />
+
+    <div class="login">
+      <h2>Sign In</h2>
+      <div class="inputBox">
+        <input type="text" placeholder="Username" />
+      </div>
+      <div class="inputBox">
+        <input type="password" placeholder="Password" />
+      </div>
+      <div class="inputBox">
+        <input type="submit" value="Login" id="btn" />
+      </div>
+      <div class="group">
+        <a href="#">Forget Password</a>
+        <a href="#">Signup</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // PNG-Switcher + Persistenz, arbeitet mit der neuen character-box
+    (function () {
+      const select = document.getElementById('characterSelect');
+      const img = document.querySelector('.character-box .character');
+      const LS_KEY = 'characterPNG-hxh';
+
+      // vorherige Auswahl laden
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) {
+        img.src = saved;
+        const opt = Array.from(select.options).find(o => o.value === saved);
+        if (opt) select.value = saved;
+      }
+
+      select.addEventListener('change', () => {
+        img.src = select.value;
+        localStorage.setItem(LS_KEY, select.value);
+      });
+    })();
+  </script>
 </body>
 </html>
